@@ -31,6 +31,27 @@ DEFAULT_LANGUAGE: dict[str, Any] = {
             "Q4": "Oct-Dec",
         },
     },
+    "glossary": {
+        "strip_notation": {
+            "JV": "Summer strip, April through October",
+            "XH": "Winter strip, November through March",
+            "CAL": "Calendar year",
+            "BULLETS": "Individual months inside a strip. Example: JV26 bullets are J26, K26, M26, N26, Q26, U26, and V26.",
+        },
+        "color_years": {
+            "white": {"winter": "X6H7", "summer": "JV26"},
+            "red": {"winter": "X7H8", "summer": "JV27"},
+            "blue": {"winter": "X8H9", "summer": "JV28"},
+        },
+        "trade_terms": {
+            "FTC": "Firm to close",
+            "FOK": "Fill or Kill / Last look",
+        },
+        "product_terms": {
+            "FIZ": "Physical index",
+            "FINANCIAL": "Index futures / futures",
+        },
+    },
     "hubs": {
         "HSC": {
             "name": "Houston Ship Channel",
@@ -58,8 +79,8 @@ DEFAULT_LANGUAGE: dict[str, Any] = {
             "quote_order": "bid_offer",
         },
         "DOM": {
-            "name": "Dominion",
-            "aliases": ["DOM", "Dom"],
+            "name": "Eastern Gas South",
+            "aliases": ["DOM", "Dom", "Dominion", "Dominion South", "Eastern Gas South"],
             "price_type": "basis_to_henry",
             "default_sign": "unknown",
             "quote_order": "bid_offer",
@@ -201,6 +222,7 @@ class LanguageBook:
         merged = json.loads(json.dumps(DEFAULT_LANGUAGE))
         merged["terms"]["months"].update(data.get("terms", {}).get("months", {}))
         merged["terms"]["strips"].update(data.get("terms", {}).get("strips", {}))
+        merged["glossary"].update(data.get("glossary", {}))
         merged["hubs"].update(data.get("hubs", {}))
         merged["board"].update(data.get("board", {}))
         merged["parser"].update(data.get("parser", {}))

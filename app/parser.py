@@ -122,6 +122,10 @@ class QuoteParser:
 
         for index, token in enumerate(tokens):
             normalized = token.upper()
+            cross_year_strip = self._find_cross_year_month_strip(normalized)
+            if cross_year_strip:
+                return cross_year_strip
+
             for prefix in ordered_prefixes:
                 year_part = None
                 code_prefix = prefix
@@ -138,7 +142,62 @@ class QuoteParser:
                     year += 2000
                 text = f"{prefixes[code_prefix]} {year}"
                 return {"code": f"{code_prefix}{year_part}", "text": text}
+
+            month_strip = self._find_month_strip(tokens, index)
+            if month_strip:
+                return month_strip
         return None
+
+    def _find_cross_year_month_strip(self, token: str) -> dict[str, str] | None:
+        months = self.language.data["terms"]["months"]
+        month_codes = "".join(months)
+        match = re.fullmatch(rf"([{month_codes}])(\d{{1,4}})([{month_codes}])(\d{{1,4}})", token)
+        if not match:
+            return None
+
+        start_code, start_year_text, end_code, end_year_text = match.groups()
+        start_year = _expand_year(start_year_text)
+        end_year = _expand_year(end_year_text, start_year)
+        return {
+            "code": f"{start_code}{start_year_text}{end_code}{end_year_text}",
+            "text": self._month_range_text(start_code, end_code, start_year, end_year),
+        }
+
+    def _find_month_strip(self, tokens: list[str], index: int) -> dict[str, str] | None:
+        months = self.language.data["terms"]["months"]
+        month_codes = "".join(months)
+        normalized = tokens[index].upper().replace("/", "")
+
+        match = re.fullmatch(rf"([{month_codes}])([{month_codes}])(\d{{2}}|\d{{4}})", normalized)
+        if match:
+            start_code, end_code, year_text = match.groups()
+            year = _expand_year(year_text)
+            return {
+                "code": f"{start_code}{end_code}{year_text}",
+                "text": self._month_range_text(start_code, end_code, year, year),
+            }
+
+        if index + 1 >= len(tokens):
+            return None
+
+        next_token = tokens[index + 1].upper()
+        match = re.fullmatch(rf"([{month_codes}])(\d{{2}}|\d{{4}})", next_token)
+        if len(normalized) == 1 and normalized in months and match:
+            end_code, year_text = match.groups()
+            year = _expand_year(year_text)
+            return {
+                "code": f"{normalized}{end_code}{year_text}",
+                "text": self._month_range_text(normalized, end_code, year, year),
+            }
+        return None
+
+    def _month_range_text(self, start_code: str, end_code: str, start_year: int, end_year: int) -> str:
+        months = self.language.data["terms"]["months"]
+        start_month = months[start_code]
+        end_month = months[end_code]
+        if start_year == end_year:
+            return f"{start_month}-{end_month} {start_year}"
+        return f"{start_month} {start_year}-{end_month} {end_year}"
 
     def _find_hub(self, raw: str) -> dict[str, Any] | None:
         aliases = self.language.alias_map()
@@ -180,3 +239,15 @@ def _format_number(value: float) -> str:
     if value == int(value):
         return str(int(value))
     return f"{value:.4f}".rstrip("0").rstrip(".")
+
+
+def _expand_year(year_text: str, start_year: int | None = None) -> int:
+    if len(year_text) == 4:
+        return int(year_text)
+    if len(year_text) == 2:
+        return 2000 + int(year_text)
+
+    year = 2020 + int(year_text)
+    if start_year is not None and year < start_year:
+        year += 10
+    return year

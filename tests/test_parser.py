@@ -52,6 +52,25 @@ class ParserTest(unittest.TestCase):
         self.assertEqual(parsed["bid"], 2.31)
         self.assertEqual(parsed["offer"], 2.34)
 
+    def test_month_range_term(self) -> None:
+        parser = self.make_parser()
+        parsed = parser.parse("MV26 HSC 22/21")
+
+        self.assertEqual(parsed["term_code"], "MV26")
+        self.assertEqual(parsed["term_text"], "June-October 2026")
+        self.assertEqual(parsed["hub_code"], "HSC")
+        self.assertEqual(parsed["bid"], -22)
+        self.assertEqual(parsed["offer"], -21)
+
+    def test_cross_year_color_strip(self) -> None:
+        parser = self.make_parser()
+        parsed = parser.parse("X6H7 DOM 22/21")
+
+        self.assertEqual(parsed["term_code"], "X6H7")
+        self.assertEqual(parsed["term_text"], "November 2026-March 2027")
+        self.assertEqual(parsed["hub_code"], "DOM")
+        self.assertEqual(parsed["hub_name"], "Eastern Gas South")
+
 
 if __name__ == "__main__":
     unittest.main()
