@@ -70,7 +70,30 @@ Copy `capture/ocr_config.example.json` to `capture/ocr_config.json`, set the scr
 python tools/ocr_capture.py
 ```
 
-The adapter posts newly recognized OCR lines to the local server. Keep this off until compliance/IT approves screen capture on the ICE workstation.
+The adapter posts newly recognized OCR lines to the local server.
+
+The same OCR adapter can also auto-start with the whiteboard. In your local, untracked `capture/ocr_config.json`, set:
+
+```json
+{
+  "enabled": true,
+  "server_url": "http://127.0.0.1:8765/api/ingest",
+  "interval_seconds": 1.0,
+  "region": {
+    "left": 100,
+    "top": 100,
+    "width": 900,
+    "height": 700
+  },
+  "tesseract_cmd": "",
+  "recent_line_limit": 80,
+  "require_quote_like": true,
+  "log_skipped": true,
+  "request_timeout_seconds": 3.0
+}
+```
+
+Only crop the chat message list, not the whole chat app. Keep this off until compliance/IT approves screen capture on the ICE workstation.
 
 ## Language File
 

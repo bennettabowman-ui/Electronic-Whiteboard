@@ -1,4 +1,5 @@
 {
+  "enabled": false,
   "server_url": "http://127.0.0.1:8765/api/ingest",
   "interval_seconds": 1.0,
   "region": {
@@ -7,5 +8,9 @@
     "width": 900,
     "height": 700
   },
-  "tesseract_cmd": ""
+  "tesseract_cmd": "",
+  "recent_line_limit": 80,
+  "require_quote_like": true,
+  "log_skipped": true,
+  "request_timeout_seconds": 3.0
 }

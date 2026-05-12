@@ -10,6 +10,7 @@ from urllib.parse import urlparse
 
 from .capture import InboxTailer
 from .language import LanguageBook
+from .ocr import OcrCaptureService, load_ocr_config
 from .parser import QuoteParser
 from .store import QuoteStore
 
@@ -24,9 +25,19 @@ class WhiteboardApp:
         cache_hours = int(self.language.data["parser"].get("rolling_cache_hours", 12))
         self.store = QuoteStore(root / "data" / "quotes.json", cache_hours)
         self.tailer = InboxTailer(self.capture_dir / "inbox.txt", self.ingest_raw_line)
+        self.ocr_config = load_ocr_config(root)
+        self.ocr_capture = OcrCaptureService(self.ocr_config) if self.ocr_config.enabled else None
 
     def start_capture(self) -> None:
         self.tailer.start()
+        if self.ocr_capture:
+            self.ocr_capture.start()
+            print(f"OCR auto-start enabled from {self.ocr_config.config_path}")
+
+    def stop_capture(self) -> None:
+        self.tailer.stop()
+        if self.ocr_capture:
+            self.ocr_capture.stop()
 
     def ingest_raw_line(self, raw: str) -> dict[str, Any]:
         parsed = self.parser.parse(raw)
@@ -158,9 +169,12 @@ def make_handler(app: WhiteboardApp) -> type[BaseHTTPRequestHandler]:
 
 def run_server(root: Path, host: str = "127.0.0.1", port: int = 8765) -> None:
     app = WhiteboardApp(root)
-    app.start_capture()
     handler = make_handler(app)
     server = ThreadingHTTPServer((host, port), handler)
     print(f"Electronic Whiteboard running at http://{host}:{port}/board")
     print(f"Admin screen running at http://{host}:{port}/admin")
-    server.serve_forever()
+    app.start_capture()
+    try:
+        server.serve_forever()
+    finally:
+        app.stop_capture()
