@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Whiteboard Admin</title>
+    <link rel="stylesheet" href="/static/styles.css">
+  </head>
+  <body class="admin-body">
+    <header class="admin-header">
+      <div>
+        <h1>Whiteboard Admin</h1>
+        <p>Ingest raw ICE chat lines, correct OCR errors, and maintain hub aliases.</p>
+      </div>
+      <a class="nav-link" href="/board">Open TV Board</a>
+    </header>
+
+    <main class="admin-grid">
+      <section class="admin-panel ingest-panel">
+        <h2>Ingest Chat</h2>
+        <textarea id="raw-input" spellcheck="false" placeholder="Jv27 HSC 22/21 1/2 day"></textarea>
+        <div class="button-row">
+          <button id="ingest-button" type="button">Post Line</button>
+          <button id="sample-button" type="button" class="secondary">Use Sample</button>
+        </div>
+      </section>
+
+      <section class="admin-panel language-panel">
+        <h2>Hub Alias</h2>
+        <div class="form-grid">
+          <label>
+            Code
+            <input id="hub-code" type="text" placeholder="HSC">
+          </label>
+          <label>
+            Name
+            <input id="hub-name" type="text" placeholder="Houston Ship Channel">
+          </label>
+          <label>
+            Aliases
+            <input id="hub-aliases" type="text" placeholder="HSC, Ship">
+          </label>
+          <label>
+            Default sign
+            <select id="hub-sign">
+              <option value="unknown">Unknown</option>
+              <option value="negative">Negative</option>
+              <option value="positive">Positive</option>
+            </select>
+          </label>
+        </div>
+        <button id="save-hub-button" type="button">Save Hub</button>
+      </section>
+
+      <section class="admin-panel active-panel">
+        <div class="panel-heading">
+          <h2>Active Quotes</h2>
+          <span id="admin-status">Loading...</span>
+        </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table" aria-label="Active quotes">
+            <thead>
+              <tr>
+                <th>Hub</th>
+                <th>Term</th>
+                <th>Market</th>
+                <th>Size</th>
+                <th>Raw</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-quote-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <dialog id="edit-dialog">
+      <form method="dialog" id="edit-form">
+        <h2>Edit Quote</h2>
+        <input id="edit-id" type="hidden">
+        <div class="form-grid">
+          <label>
+            Hub code
+            <input id="edit-hub-code" type="text">
+          </label>
+          <label>
+            Hub name
+            <input id="edit-hub-name" type="text">
+          </label>
+          <label>
+            Term code
+            <input id="edit-term-code" type="text">
+          </label>
+          <label>
+            Term text
+            <input id="edit-term-text" type="text">
+          </label>
+          <label>
+            Bid
+            <input id="edit-bid" type="number" step="0.0001">
+          </label>
+          <label>
+            Offer
+            <input id="edit-offer" type="number" step="0.0001">
+          </label>
+          <label>
+            Size
+            <input id="edit-size" type="text">
+          </label>
+          <label>
+            Display text
+            <input id="edit-display" type="text">
+          </label>
+        </div>
+        <div class="button-row">
+          <button id="save-edit-button" type="submit">Save</button>
+          <button id="cancel-edit-button" type="button" class="secondary">Cancel</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="/static/admin.js"></script>
+  </body>
+</html>

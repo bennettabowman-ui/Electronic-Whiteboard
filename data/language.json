@@ -1,0 +1,175 @@
+{
+  "terms": {
+    "months": {
+      "F": "January",
+      "G": "February",
+      "H": "March",
+      "J": "April",
+      "K": "May",
+      "M": "June",
+      "N": "July",
+      "Q": "August",
+      "U": "September",
+      "V": "October",
+      "X": "November",
+      "Z": "December"
+    },
+    "strips": {
+      "JV": "Summer",
+      "XH": "Winter",
+      "CAL": "Calendar year",
+      "Q1": "Jan-Mar",
+      "Q2": "Apr-Jun",
+      "Q3": "Jul-Sep",
+      "Q4": "Oct-Dec"
+    }
+  },
+  "hubs": {
+    "HSC": {
+      "name": "Houston Ship Channel",
+      "aliases": ["HSC"],
+      "price_type": "basis_to_henry",
+      "default_sign": "negative",
+      "quote_order": "bid_offer",
+      "group": "Texas",
+      "board_order": 10
+    },
+    "WAHA": {
+      "name": "West Texas Permian",
+      "aliases": ["WAHA", "Waha"],
+      "price_type": "basis_to_henry",
+      "default_sign": "unknown",
+      "quote_order": "bid_offer",
+      "group": "Texas",
+      "board_order": 20
+    },
+    "REX": {
+      "name": "Rockies Express",
+      "aliases": ["REX", "Rex"],
+      "price_type": "basis_to_henry",
+      "default_sign": "unknown",
+      "quote_order": "bid_offer"
+    },
+    "DOM": {
+      "name": "Dominion",
+      "aliases": ["DOM", "Dom"],
+      "price_type": "basis_to_henry",
+      "default_sign": "unknown",
+      "quote_order": "bid_offer",
+      "group": "Northeast",
+      "board_order": 120
+    },
+    "NNY": {
+      "name": "Non-NY",
+      "aliases": ["NNY"],
+      "price_type": "basis_to_henry",
+      "default_sign": "unknown",
+      "quote_order": "bid_offer",
+      "group": "Northeast",
+      "board_order": 110
+    },
+    "AGT": {
+      "name": "Algonquin",
+      "aliases": ["AGT"],
+      "price_type": "basis_to_henry",
+      "default_sign": "unknown",
+      "quote_order": "bid_offer",
+      "group": "Northeast",
+      "board_order": 100
+    },
+    "WLA": {
+      "name": "West LA",
+      "aliases": ["WLA"],
+      "price_type": "basis_to_henry",
+      "default_sign": "unknown",
+      "quote_order": "bid_offer",
+      "group": "Gulf Coast",
+      "board_order": 70
+    },
+    "ELA": {
+      "name": "East LA",
+      "aliases": ["ELA"],
+      "price_type": "basis_to_henry",
+      "default_sign": "unknown",
+      "quote_order": "bid_offer",
+      "group": "Gulf Coast",
+      "board_order": 60
+    },
+    "TGT": {
+      "name": "Texas Gas",
+      "aliases": ["TGT"],
+      "price_type": "basis_to_henry",
+      "default_sign": "unknown",
+      "quote_order": "bid_offer",
+      "group": "Texas",
+      "board_order": 30
+    },
+    "ML": {
+      "name": "Mainline",
+      "aliases": ["ML", "Mainline"],
+      "price_type": "basis_to_henry",
+      "default_sign": "unknown",
+      "quote_order": "bid_offer"
+    },
+    "CGML": {
+      "name": "Columbia Gulf Mainline",
+      "aliases": ["CGML", "Columbia Gulf ML"],
+      "price_type": "basis_to_henry",
+      "default_sign": "unknown",
+      "quote_order": "bid_offer"
+    },
+    "TXOK": {
+      "name": "Texas Oklahoma",
+      "aliases": ["TXOK", "Texas Oklahoma"],
+      "price_type": "basis_to_henry",
+      "default_sign": "unknown",
+      "quote_order": "bid_offer",
+      "group": "Texas",
+      "board_order": 40
+    },
+    "FGT": {
+      "name": "Florida",
+      "aliases": ["FGT", "Florida"],
+      "price_type": "basis_to_henry",
+      "default_sign": "unknown",
+      "quote_order": "bid_offer",
+      "group": "Gulf Coast",
+      "board_order": 80
+    },
+    "HH": {
+      "name": "Henry Hub Benchmark",
+      "aliases": ["HH", "Henry Hub"],
+      "price_type": "flat_price",
+      "default_sign": "positive",
+      "quote_order": "bid_offer",
+      "group": "Gulf Coast",
+      "board_order": 50
+    },
+    "TRANSCO": {
+      "name": "Transco Appalachia",
+      "aliases": ["TRANSCO", "Transco"],
+      "price_type": "basis_to_henry",
+      "default_sign": "unknown",
+      "quote_order": "bid_offer",
+      "group": "Northeast",
+      "board_order": 130
+    }
+  },
+  "board": {
+    "fresh_minutes": 10,
+    "old_minutes": 30,
+    "groups": ["Texas", "Gulf Coast", "Northeast", "Other"],
+    "terms": [
+      {"code": "JV26", "label": "JV26", "subtitle": "Summer 2026"},
+      {"code": "XH26", "label": "XH26", "subtitle": "Winter 2026"},
+      {"code": "CAL27", "label": "Cal27", "subtitle": "Calendar 2027"},
+      {"code": "Q326", "label": "Q3 26", "subtitle": "Jul-Sep 2026"},
+      {"code": "Q426", "label": "Q4 26", "subtitle": "Oct-Dec 2026"}
+    ]
+  },
+  "parser": {
+    "default_quote_order": "bid_offer",
+    "stale_minutes": 15,
+    "rolling_cache_hours": 12
+  }
+}

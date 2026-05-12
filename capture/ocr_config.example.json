@@ -1,0 +1,11 @@
+{
+  "server_url": "http://127.0.0.1:8765/api/ingest",
+  "interval_seconds": 1.0,
+  "region": {
+    "left": 100,
+    "top": 100,
+    "width": 900,
+    "height": 700
+  },
+  "tesseract_cmd": ""
+}

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Electronic Whiteboard</title>
+    <link rel="stylesheet" href="/static/styles.css">
+  </head>
+  <body class="board-body">
+    <header class="board-header">
+      <div class="board-title">
+        <h1>Gas Basis Board</h1>
+        <div class="status-legend" aria-label="Quote freshness legend">
+          <span><i class="dot dot-fresh"></i>Fresh</span>
+          <span><i class="dot dot-stale"></i>Watch</span>
+          <span><i class="dot dot-old"></i>Old</span>
+        </div>
+      </div>
+      <div class="header-metrics">
+        <div>
+          <span class="metric-label">Active</span>
+          <strong id="active-count">0</strong>
+        </div>
+        <div>
+          <span class="metric-label">Fresh</span>
+          <strong id="fresh-count">0</strong>
+        </div>
+        <div>
+          <span class="metric-label">Stale</span>
+          <strong id="stale-count">0</strong>
+        </div>
+        <div>
+          <span class="metric-label">Old</span>
+          <strong id="old-count">0</strong>
+        </div>
+      </div>
+    </header>
+
+    <main class="board-shell">
+      <table id="board-table" class="matrix-table" aria-label="Live quote matrix">
+        <tbody>
+          <tr>
+            <td class="empty-row">Loading board...</td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+
+    <footer class="board-footer">
+      <span>Active quotes <strong id="footer-active">0</strong></span>
+      <span>Fresh <strong id="footer-fresh">0</strong></span>
+      <span>Stale <strong id="footer-stale">0</strong></span>
+      <span>Old <strong id="footer-old">0</strong></span>
+    </footer>
+
+    <script src="/static/board.js"></script>
+  </body>
+</html>
