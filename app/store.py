@@ -118,12 +118,15 @@ class QuoteStore:
     def snapshot(self, stale_minutes: int, language_data: dict[str, Any]) -> dict[str, Any]:
         with self.lock:
             now = utc_now()
+            history_by_key = self._history_by_key()
             quotes = []
             for quote in self.state["active"].values():
                 item = dict(quote)
                 updated_at = parse_dt(item["updated_at"])
                 age_seconds = max(0, int((now - updated_at).total_seconds()))
                 item["age_seconds"] = age_seconds
+                item["bid_age_seconds"] = self._field_age_seconds(item, "bid", history_by_key, now)
+                item["offer_age_seconds"] = self._field_age_seconds(item, "offer", history_by_key, now)
                 item["stale"] = age_seconds >= stale_minutes * 60
                 quotes.append(item)
 
@@ -140,6 +143,42 @@ class QuoteStore:
         term = quote.get("term_code") or quote.get("term_text") or "UNKNOWN_TERM"
         return f"{hub}|{term}"
 
+    def _history_by_key(self) -> dict[str, list[dict[str, Any]]]:
+        grouped: dict[str, list[dict[str, Any]]] = {}
+        for quote in self.state["history"]:
+            key = quote.get("state_key")
+            if not key:
+                continue
+            grouped.setdefault(key, []).append(quote)
+
+        for quotes in grouped.values():
+            quotes.sort(key=_quote_time, reverse=True)
+        return grouped
+
+    def _field_age_seconds(
+        self,
+        quote: dict[str, Any],
+        field: str,
+        history_by_key: dict[str, list[dict[str, Any]]],
+        now: datetime,
+    ) -> int:
+        current_value = quote.get(field)
+        current_time = _quote_time(quote)
+        started_at = current_time
+
+        for historical in history_by_key.get(str(quote.get("state_key")), []):
+            historical_time = _quote_time(historical)
+            if historical_time > current_time:
+                continue
+            if historical.get("deleted"):
+                break
+            if _same_price(historical.get(field), current_value):
+                started_at = historical_time
+                continue
+            break
+
+        return max(0, int((now - started_at).total_seconds()))
+
     def _prune_history(self) -> None:
         cutoff = utc_now() - timedelta(hours=self.rolling_cache_hours)
         self.state["history"] = [
@@ -153,3 +192,16 @@ def _format_number(value: float) -> str:
     if value == int(value):
         return str(int(value))
     return f"{value:.4f}".rstrip("0").rstrip(".")
+
+
+def _quote_time(quote: dict[str, Any]) -> datetime:
+    return parse_dt(str(quote.get("updated_at") or quote.get("parsed_at")))
+
+
+def _same_price(left: Any, right: Any) -> bool:
+    if left is None or right is None:
+        return left is None and right is None
+    try:
+        return float(left) == float(right)
+    except (TypeError, ValueError):
+        return left == right

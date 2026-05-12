@@ -169,15 +169,17 @@ function renderHubCells(quote, freshMinutes, oldMinutes) {
   const title = escapeHtml([quote.raw, ...(quote.warnings || [])].filter(Boolean).join(" | "));
   const bid = quote.bid === null || quote.bid === undefined ? "-" : formatNumber(quote.bid);
   const offer = quote.offer === null || quote.offer === undefined ? "-" : formatNumber(quote.offer);
+  const bidTitle = escapeHtml(buildPriceHoverText("Bid", bid, quote.bid_age_seconds, quote));
+  const offerTitle = escapeHtml(buildPriceHoverText("Offer", offer, quote.offer_age_seconds, quote));
   const meta = renderQuoteMeta(quote);
   const doneText = quote.done || "";
 
   return `
-    <td class="matrix-cell bid-cell ${ageClass}${warnClass}" title="${title}">
+    <td class="matrix-cell bid-cell ${ageClass}${warnClass}" title="${bidTitle}">
       <strong>${escapeHtml(bid)}</strong>
       ${meta}
     </td>
-    <td class="matrix-cell offer-cell ${ageClass}${warnClass}" title="${title}">
+    <td class="matrix-cell offer-cell ${ageClass}${warnClass}" title="${offerTitle}">
       <strong>${escapeHtml(offer)}</strong>
     </td>
     <td class="matrix-cell done-cell ${ageClass}${warnClass}" title="${title}">
@@ -198,6 +200,18 @@ function renderQuoteMeta(quote) {
     return "";
   }
   return `<span>${escapeHtml(parts.join(" | "))}</span>`;
+}
+
+function buildPriceHoverText(side, priceText, ageSeconds, quote) {
+  const seconds = Number.isFinite(Number(ageSeconds)) ? Number(ageSeconds) : Number(quote.age_seconds || 0);
+  const priceLine = priceText === "-"
+    ? `${side} price is unavailable`
+    : `${side} ${priceText} has been at this point for ${formatDuration(seconds)}`;
+  return [
+    priceLine,
+    quote.raw ? `Raw: ${quote.raw}` : "",
+    ...(quote.warnings || []),
+  ].filter(Boolean).join(" | ");
 }
 
 function quoteKey(hubCode, termCode) {
@@ -234,6 +248,24 @@ function formatNumber(value) {
     return String(numeric);
   }
   return numeric.toFixed(4).replace(/0+$/, "").replace(/\.$/, "");
+}
+
+function formatDuration(totalSeconds) {
+  const seconds = Math.max(0, Math.floor(Number(totalSeconds) || 0));
+  const days = Math.floor(seconds / 86400);
+  const hours = Math.floor((seconds % 86400) / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+
+  if (days > 0) {
+    return `${days}d ${hours}h`;
+  }
+  if (hours > 0) {
+    return `${hours}h ${minutes}m`;
+  }
+  if (minutes > 0) {
+    return `${minutes}m`;
+  }
+  return "less than 1m";
 }
 
 function escapeHtml(value) {
