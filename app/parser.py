@@ -117,6 +117,10 @@ class QuoteParser:
 
     def _find_term(self, raw: str) -> dict[str, str] | None:
         tokens = _tokens(raw)
+        color_season_strip = self._find_color_season_strip(tokens)
+        if color_season_strip:
+            return color_season_strip
+
         prefixes = self.language.term_prefixes()
         ordered_prefixes = sorted(prefixes, key=len, reverse=True)
 
@@ -147,6 +151,48 @@ class QuoteParser:
             if month_strip:
                 return month_strip
         return None
+
+    def _find_color_season_strip(self, tokens: list[str]) -> dict[str, str] | None:
+        color_years = self.language.data.get("glossary", {}).get("color_years", {})
+        if not color_years:
+            return None
+
+        normalized = [token.upper() for token in tokens]
+        for index, token in enumerate(normalized):
+            color = token.lower()
+            if color not in color_years:
+                continue
+
+            for neighbor_index in (index + 1, index - 1):
+                if neighbor_index < 0 or neighbor_index >= len(normalized):
+                    continue
+                season = _season_key(normalized[neighbor_index])
+                if not season:
+                    continue
+                code = str(color_years[color].get(season, "")).upper()
+                if not code:
+                    continue
+                return self._term_from_code(code)
+        return None
+
+    def _term_from_code(self, code: str) -> dict[str, str]:
+        normalized = code.upper()
+        cross_year_strip = self._find_cross_year_month_strip(normalized)
+        if cross_year_strip:
+            return cross_year_strip
+
+        prefixes = self.language.term_prefixes()
+        ordered_prefixes = sorted(prefixes, key=len, reverse=True)
+        for prefix in ordered_prefixes:
+            if not normalized.startswith(prefix):
+                continue
+            year_part = normalized[len(prefix) :]
+            if not year_part.isdigit() or len(year_part) not in (2, 4):
+                continue
+            year = _expand_year(year_part)
+            return {"code": normalized, "text": f"{prefixes[prefix]} {year}"}
+
+        return {"code": normalized, "text": normalized}
 
     def _find_cross_year_month_strip(self, token: str) -> dict[str, str] | None:
         months = self.language.data["terms"]["months"]
@@ -239,6 +285,18 @@ def _format_number(value: float) -> str:
     if value == int(value):
         return str(int(value))
     return f"{value:.4f}".rstrip("0").rstrip(".")
+
+
+def _season_key(token: str) -> str | None:
+    aliases = {
+        "SUMMER": "summer",
+        "SUM": "summer",
+        "S": "summer",
+        "WINTER": "winter",
+        "WIN": "winter",
+        "W": "winter",
+    }
+    return aliases.get(token.upper())
 
 
 def _expand_year(year_text: str, start_year: int | None = None) -> int:

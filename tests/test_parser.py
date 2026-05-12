@@ -71,6 +71,25 @@ class ParserTest(unittest.TestCase):
         self.assertEqual(parsed["hub_code"], "DOM")
         self.assertEqual(parsed["hub_name"], "Eastern Gas South")
 
+    def test_color_summer_term(self) -> None:
+        parser = self.make_parser()
+        parsed = parser.parse("red summer HSC 22/21")
+
+        self.assertEqual(parsed["term_code"], "JV27")
+        self.assertEqual(parsed["term_text"], "Summer 2027")
+        self.assertEqual(parsed["hub_code"], "HSC")
+        self.assertEqual(parsed["bid"], -22)
+        self.assertEqual(parsed["offer"], -21)
+
+    def test_color_winter_term(self) -> None:
+        parser = self.make_parser()
+        parsed = parser.parse("blue winter DOM 22/21")
+
+        self.assertEqual(parsed["term_code"], "X8H9")
+        self.assertEqual(parsed["term_text"], "November 2028-March 2029")
+        self.assertEqual(parsed["hub_code"], "DOM")
+        self.assertEqual(parsed["hub_name"], "Eastern Gas South")
+
 
 if __name__ == "__main__":
     unittest.main()
